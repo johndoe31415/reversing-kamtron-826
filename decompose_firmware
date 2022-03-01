@@ -1,0 +1,20 @@
+#!/usr/bin/python3
+#
+# License: CC-0
+
+import sys
+import os
+from parts import parts
+
+input_firmware_binfile = sys.argv[1]
+output_directory = sys.argv[2]
+
+with open(input_firmware_binfile, "rb") as f:
+	fw = f.read()
+assert(len(fw) == 16777216)
+
+os.makedirs(output_directory)
+for (name, offset, length) in parts:
+	output_name = output_directory + "/" + name
+	with open(output_name, "wb") as f:
+		f.write(fw[offset : offset + length])

@@ -1,0 +1,80 @@
+#!/usr/bin/python3
+#
+# License: CC-0
+
+import sys
+import os
+import subprocess
+import time
+import contextlib
+import shutil
+import tempfile
+from parts import parts
+
+def padto(data, length):
+	assert(len(data) <= length)
+	padlen = length - len(data)
+	if padlen > 0:
+		data = data + bytes([ 0xff ] * padlen)
+	return data
+
+firmware_directory = sys.argv[1]
+output_firmware_binfile = sys.argv[2]
+
+if os.path.exists(output_firmware_binfile):
+	print("Refusing to overwrite: %s" % (output_firmware_binfile))
+	sys.exit(1)
+
+try:
+	subprocess.check_call([ "modprobe", "mtdram", "total_size=%d" % (parts[4][2] // 1024) ])
+	subprocess.check_call([ "modprobe", "mtdblock" ])
+	with open(firmware_directory + "/" + parts[4][0], "rb") as inf, open("/dev/mtd0", "wb") as outf:
+		outf.write(inf.read())
+
+	shutil.rmtree("rootfs")
+	with contextlib.suppress(FileExistsError):
+		os.makedirs("jffs2")
+
+	try:
+		subprocess.check_call([ "unsquashfs", "-d", "rootfs", firmware_directory + "/" + parts[3][0] ])
+		subprocess.check_call([ "mount", "-t", "jffs2", "/dev/mtdblock0", "jffs2" ])
+
+		input("Now edit the rootfs in rootfs/ and/or the JFFS2 filesystem in jffs2/ and press RETURN...")
+	finally:
+		subprocess.check_call([ "umount", "jffs2" ])
+
+	# Okay, everything has been created.
+	subprocess.check_call([ "sync" ])
+
+
+	with open("/dev/mtd0", "rb") as f:
+		jffs = f.read()
+
+	with tempfile.NamedTemporaryFile() as tmp:
+		os.unlink(tmp.name)
+		subprocess.check_call([ "mksquashfs", "rootfs", tmp.name, "-comp", "xz" ])
+		with open(tmp.name, "rb") as f:
+			rootfs = f.read()
+
+	print("Read %d bytes of JFFS and %d bytes of RootFS" % (len(jffs), len(rootfs)))
+
+	# Build the firmware image
+	with open(output_firmware_binfile, "wb") as outf:
+		for i in range(3):
+			with open(firmware_directory + "/" + parts[i][0], "rb") as f:
+				outf.write(f.read())
+
+		rootfs = padto(rootfs, parts[3][2])
+		outf.write(rootfs)
+
+		jffs = padto(jffs, parts[4][2])
+		outf.write(jffs)
+
+		with open(firmware_directory + "/" + parts[5][0], "rb") as f:
+			outf.write(f.read())
+
+finally:
+	subprocess.check_call([ "sync" ])
+	time.sleep(1)
+	subprocess.check_call([ "rmmod", "mtdblock" ])
+	subprocess.check_call([ "rmmod", "mtdram" ])
