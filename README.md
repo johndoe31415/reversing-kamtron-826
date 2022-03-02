@@ -616,5 +616,10 @@ W25Q128 with the `-y` option works:
 
 ```
 $ minipro -p "W25Q128FV@SOIC8" -w new_firmware.bin -y --skip_verify
-
+Found TL866CS 03.2.86 (0x256)
+WARNING: Chip ID mismatch: expected 0xEF4018, got 0x684018 (BY25Q128AS)
+Erasing... 47.03Sec OK
+Protect off...OK
+Writing Code...  247.74Sec  OK
+Protect on...OK
 ```
