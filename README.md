@@ -609,6 +609,11 @@ The script `decompose_firmware` decomposes a firmware binary into its compoents.
 Then you can call `edit_firmware` which will unsquashfs/mount the rootfs/JFFS
 and recompile it back together to a firmware image.
 
+## Telnet
+By writing the file `flag_debug_telnet` inside the root of the JFFS2
+(`/dev/mtdblock2`), you can activate a telnet server on port 9527.
+
+
 ## Re-flashing a new image
 When you've modified an image, you can re-flash it. Note that the MiniPro
 TL866CS which I'm using cannot write using the BY25Q128, but using a Winbond
