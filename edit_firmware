@@ -31,7 +31,8 @@ try:
 	with open(firmware_directory + "/" + parts[4][0], "rb") as inf, open("/dev/mtd0", "wb") as outf:
 		outf.write(inf.read())
 
-	shutil.rmtree("rootfs")
+	with contextlib.suppress(FileNotFoundError):
+		shutil.rmtree("rootfs")
 	with contextlib.suppress(FileExistsError):
 		os.makedirs("jffs2")
 

@@ -6,27 +6,48 @@ dissected a Wireless IP camera.
 It already gets odd with the name of the camera. It was purchased from Amazon
 on 2022-02-07 as the "Surveillance Camera WiFi - HD WLAN IP Camera with
 350°/100° Swivel, Home and Baby Monitor with Motion Detection, Two-Way Audio,
-Night Vision, Supports Remote Alarm and Mobile App Control, Black" and lists as
-a brank "CAMNRK".
+Night Vision, Supports Remote Alarm and Mobile App Control, Black"
+("Überwachungskamera WiFi - HD WLAN IP Kamera mit 350°/100°Schwenkbar,Home und
+Baby Monitor mit Bewegungserkennung, Zwei-Wege-Audio, Nachtsicht, unterstützt
+Fernalarm und Mobile App Kontrolle,Schwarz") and lists as a brand "CAMNRK".
+Lower in the offering, the vendor was listed as "KAMTR0ND".
+
+The buying price of the camera was 23.99€ on amazon.de and the Amazon ASIN was
+B09FT7T1T2.
 
 On the actual box I cannot see "CAMNRK" anywhere, but the label "KAMTRON" has
 been glued over with black sticker (sic!).
 
-The Manufacturer is listed as
+The manufacturer is listed on the package as:
 
+```
 ShenZhen Fujikam Industry Development Co., Ltd
 6F. West, 1st Building, Innovative Industrial Park,
 Nashan Cloud Valley, No. 1183, Liuxian Avenue,
 Nashan Distric, ShenZhen, China
+```
 
-The Product Information states:
+The product information label on the device states:
+
+```
 Name: Wireless IP Camera
 Model No: 826
+```
 
 The German importer is Like Sun GmbH, Planckstr. 59, 45147 Essen.
 
-## Firmware extraction
+## Serial console
 The device offers an USART console on three pins that are easily solderable.
+The configuration is 115200 8N1 3.3V. The three pins (viewed from the Camera
+perspective are):
+
+```
+1 GND (square pin)
+2 TX
+3 RX
+```
+
+## Firmware extraction
 The root console is locked by default (protected with password). The bootloader
 does not seem to respond to character input (even though U-Boot says that it
 can be cancelled):
@@ -588,5 +609,12 @@ The script `decompose_firmware` decomposes a firmware binary into its compoents.
 Then you can call `edit_firmware` which will unsquashfs/mount the rootfs/JFFS
 and recompile it back together to a firmware image.
 
-Finally you can flash this image. Note that the MiniPro cannot write using the
-BY25Q128, but using a Winbond W25Q128 with the `-y` option works.
+## Re-flashing a new image
+When you've modified an image, you can re-flash it. Note that the MiniPro
+TL866CS which I'm using cannot write using the BY25Q128, but using a Winbond
+W25Q128 with the `-y` option works:
+
+```
+$ minipro -p "W25Q128FV@SOIC8" -w new_firmware.bin -y --skip_verify
+
+```
