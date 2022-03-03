@@ -729,6 +729,45 @@ reliant joe [~]: echo -n "${dev_id}${context}${pass_mp}${pass_up}" | md5sum
 
 The string `7eb2534...` is the root password.
 
+## Signature verification
+There seems to be an RSA private key that is used to sign some data
+asymmetrically. The corresponding public key is hardcoded in the `mipc` binary
+and called using the `sign_verify` command. This public key is:
+
+```
+RSA Public-Key: (2048 bit)
+Modulus:
+    00:b8:8e:4b:d1:e2:9a:ee:6a:88:91:16:57:23:e1:
+    a4:ab:d7:cb:82:09:a8:86:f9:58:dd:21:38:53:d4:
+    11:30:6b:5c:54:89:7c:be:7c:d6:84:b4:c9:1e:43:
+    17:04:f1:90:d5:65:5d:bc:f0:be:68:5c:c3:56:74:
+    fb:b1:2b:a6:0a:d9:e9:be:ad:8c:58:76:b9:53:a7:
+    3f:6e:ff:6c:d0:74:c6:e4:f7:1a:ae:ab:fa:68:f2:
+    47:17:6a:1d:4e:68:5c:6d:81:7c:b5:c2:84:cf:1b:
+    f6:74:56:6a:05:f8:80:32:ac:a9:b5:8b:36:15:23:
+    ba:d0:1d:91:70:94:97:e1:51:e7:a7:aa:a4:12:1e:
+    b2:b3:fa:2b:0c:95:15:95:30:77:2b:e1:71:0e:09:
+    44:52:85:27:71:ad:38:d8:e6:47:05:9b:5e:9e:5e:
+    90:77:87:f6:7f:54:26:40:a1:f7:3e:6b:c2:1f:93:
+    53:7d:1d:cb:8c:d3:97:d5:b1:22:1b:f1:b5:b9:88:
+    d5:29:dd:3d:60:f8:3b:b2:d8:1a:9c:42:ed:73:f1:
+    b9:0b:d4:66:11:81:7d:bc:28:0b:88:4c:3b:f1:6d:
+    9f:02:68:d0:f4:26:64:f0:7a:f3:1d:2d:09:70:2f:
+    6f:54:59:78:a9:4d:16:fa:d1:65:2d:38:2b:eb:0b:
+    ee:17
+Exponent: 65537 (0x10001)
+writing RSA key
+-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuI5L0eKa7mqIkRZXI+Gk
+q9fLggmohvlY3SE4U9QRMGtcVIl8vnzWhLTJHkMXBPGQ1WVdvPC+aFzDVnT7sSum
+Ctnpvq2MWHa5U6c/bv9s0HTG5Pcarqv6aPJHF2odTmhcbYF8tcKEzxv2dFZqBfiA
+MqyptYs2FSO60B2RcJSX4VHnp6qkEh6ys/orDJUVlTB3K+FxDglEUoUnca042OZH
+BZtenl6Qd4f2f1QmQKH3PmvCH5NTfR3LjNOX1bEiG/G1uYjVKd09YPg7stganELt
+c/G5C9RmEYF9vCgLiEw78W2fAmjQ9CZk8HrzHS0JcC9vVFl4qU0W+tFlLTgr6wvu
+FwIDAQAB
+-----END PUBLIC KEY-----
+```
+
 ## Further work
   * It would be interesting to see if the videostream is properly encrypted --
     preliminary data makes it seem like this is maybe not the case.
