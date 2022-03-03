@@ -43,9 +43,11 @@ perspective are):
 
 ```
 1 GND (square pin)
-2 TX
-3 RX
+2 TX (white in the image)
+3 RX (yellow in the image)
 ```
+
+![USART Pinout](https://raw.githubusercontent.com/johndoe31415/reversing-kamtron-826/master/usart.jpg)
 
 ## Firmware extraction
 The root console is locked by default (protected with password). The bootloader
@@ -590,7 +592,10 @@ The CPU seems to be a Grain GM8135.
 ## Firmware extraction
 We therefore tried to extract the firmware. It's stored on a BY25Q128 chip (128
 MBit flash memory, 16 MiB). To easily be able to re-flash new firmwares we
-decided to build a makeshift socket for the chip.
+decided to build a makeshift socket for the chip:
+
+
+![Makeshift socket](https://raw.githubusercontent.com/johndoe31415/reversing-kamtron-826/master/makeshift_socket.jpg)
 
 
 ## Image disassembly
