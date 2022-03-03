@@ -697,7 +697,7 @@ the root password, but for some reason that I don't understand (yet), this
 script is subsequently restored -- possibly from the .tar.lzma blob in the
 rootfs directory.
 
-![First successful shell](https://raw.githubusercontent.com/johndoe31415/reversing-kamtron-826/master/first_shell.jpg)
+![First successful shell](https://raw.githubusercontent.com/johndoe31415/reversing-kamtron-826/master/first_shell.png)
 
 ## Re-flashing a new image
 When you've modified an image, you can re-flash it. Note that the MiniPro
