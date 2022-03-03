@@ -613,11 +613,89 @@ and recompile it back together to a firmware image.
 By writing the file `flag_debug_telnet` inside the root of the JFFS2
 (`/dev/mtdblock2`), you can activate a telnet server on port 9527.
 
+## Root password
+The root password is randomly set on each boot and seems to depend on several factors:
+
+1. The device ID ("1jfiegbrmeg3q")
+2. Some random "context" value, seems to be a small integer that is displayed
+   on the login prompt: "28450"
+3. Some internal secret values, not sure if they're shared across a family of
+   devices, called the "pass.up" with value "1vOsNdbzrDXW86w11vOsNQ" and the
+   "pass.mp" with value "d4BwZ8nVU2mgfHDeOJhyjQ". Possibly "user password" and
+   "master password"?
+
+When copying the whole root FS and JFFS into a environment and symlinking
+busybox to /bin/sh, you can simply chroot into that image on a Raspberry Pi.
+Then, in the login prompt, you will see the device ID and randomized context
+value:
+
+
+```
+sniffpi [~]: telnet 192.168.42.108 9527
+Trying 192.168.42.108...
+Connected to 192.168.42.108.
+Escape character is '^]'.
+
+1jfiegbrmeg3q@4598@m@u@e.192.168.42.108 login: 
+
+```
+
+As you can see, my device ID is `1jfiegbrmeg3q` and the context ID is `4598`.
+Then, in the Raspberry Pi chroot image, simply do:
+
+```
+sniffpi [/fs_1/project/apps/app/ipc/data/sh]: ../../../../../platforms/gm8135_v2-linux-armv5/bin/mipc_tool -cmd pass -devid 1jfiegbrmeg3q -prompt /tmp/prompt.debug -pass /tmp/pass.debug -ctx 4598 -mp d4BwZ8nVU2mgfHDeOJhyjQ -up MEJLfM11UhRkaCvcFt1GyQ && cat /tmp/pass.debug 
+7eb2534df0f0d5af7481e485bf76ade4
+```
+
+This hash value, `7eb253...` is the current root password:
+
+```
+1jfiegbrmeg3q@4598@m@u@e.192.168.42.108 login: root
+Password: 
+login: can't chdir to home directory '/root'
+
+|---------------------------------------------------------------------------|
+| Welcome to                                                                |
+|                                                                           |
+|                    A                                                      |   
+|                   AAA                                                     |   
+|                  AAAAA                                                    |   
+|                 AAAAAAA                                                   |   
+|                AAAA   AA                                                  |   
+|         A     AAAA     AA                                                 |   
+|        AAA   AAAA       AA          AAA   AAAAA    AAA   AAAAA    AAAAA   |   
+|       AAAAA AAAA         AA              AA   AA        AA   AA  AA   AA  |
+|      AAAAAAAAAA           AA        AAA  AA   AA   AAA  AA   AA  AA   AA  |
+|     AAAAA AAAA             AA       AAA  AA   AA   AAA  AA   AA  AA   AA  |
+|    AAAAA    A               AA      AAA  AA   AA   AAA  AA   AA   AAAAAA  |
+|   AAAAA                      AA     AAA  AA   AA   AAA  AA   AA       AA  |
+| AAAAAA                        AAAA  AAA  AA   AA   AAA  AA   AA  AAAAAA   |   
+|===========================================================================|
+|                                                                           |   
+|                                             http://www.shenzhenmining.com |
+|                                           power by (C)shenzhenmining 2015 |
+|---------------------------------------------------------------------------|
+
+
+Mar  3 20:28:01 login[2202]: root login on 'ttyS0'
+
+
+BusyBox v1.20.1 (2015-03-29 21:56:34 HKT) built-in shell (ash)
+Enter 'help' for a list of built-in commands.
+
+[root@1jfiegbrmeg3q@4598@m@u@e.192.168.42.108]# 
+```
+
+I've also tried overwriting the `dev_passwd.sh` script to always set "admin" as
+the root password, but for some reason that I don't understand (yet), this
+script is subsequently restored -- possibly from the .tar.lzma blob in the
+rootfs directory.
+
 
 ## Re-flashing a new image
 When you've modified an image, you can re-flash it. Note that the MiniPro
-TL866CS which I'm using cannot write using the BY25Q128, but using a Winbond
-W25Q128 with the `-y` option works:
+TL866CS which I'm using cannot write using the BY25Q128, but using a Winbond W25Q128 with the `-y` option works:
 
 ```
 $ minipro -p "W25Q128FV@SOIC8" -w new_firmware.bin -y --skip_verify
@@ -628,3 +706,9 @@ Protect off...OK
 Writing Code...  247.74Sec  OK
 Protect on...OK
 ```
+
+## Further work
+  * It would be interesting to dissect the `mipc_tool` binary to see exactly
+    how it performs key derivation of the root password.
+  * It would be interesting to see if the videostream is properly encrypted --
+    preliminary data makes it seem like this is maybe not the case.
