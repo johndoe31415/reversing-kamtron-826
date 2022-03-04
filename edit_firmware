@@ -26,7 +26,7 @@ if os.path.exists(output_firmware_binfile):
 	sys.exit(1)
 
 try:
-	subprocess.check_call([ "modprobe", "mtdram", "total_size=%d" % (parts[4][2] // 1024) ])
+	subprocess.check_call([ "modprobe", "mtdram", "total_size=%d" % (parts[4][2] // 1024), "erase_size=64" ])
 	subprocess.check_call([ "modprobe", "mtdblock" ])
 	with open(firmware_directory + "/" + parts[4][0], "rb") as inf, open("/dev/mtd0", "wb") as outf:
 		outf.write(inf.read())

@@ -1,0 +1,30 @@
+#!/bin/bash -e
+#
+# License: CC-0
+
+[ -d rootfs ] || exit 1
+[ -f rootfs/squashfs_init ] || exit 1
+[ -d jffs2 ] || exit 1
+[ -f jffs2/gmlib.cfg ] || exit 1
+
+rm -fr raspi_image
+mkdir raspi_image
+rsync -a rootfs/. raspi_image/
+rsync -a jffs2/. raspi_image/mnt/mtd/
+ln -s /gm/bin/busybox raspi_image/bin/sh
+ln -s /gm/bin/busybox raspi_image/bin/ls
+cd raspi_image
+tar xfv backupfs/etc.tar 
+cd ..
+cat >raspi_image/bootstrap <<EOF
+#!/bin/bash
+mkdir -p usr/lib
+rsync -a --ignore-existing /lib/. lib
+rsync -a --ignore-existing /usr/lib/. usr/lib
+cp /usr/bin/gdb bin
+cp /bin/bash bin
+EOF
+chmod +x raspi_image/bootstrap
+
+tar cv raspi_image | pigz > raspi_image.tar.gz
+

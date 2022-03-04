@@ -36,6 +36,12 @@ Model No: 826
 
 The German importer is Like Sun GmbH, Planckstr. 59, 45147 Essen.
 
+The web interface shows a model number of "f300".
+
+## Version
+The indicated firmware version is v5.3.3.2011031606. The MD5SUM of the `mipc`
+binary is `435523cb292c11f50405a729353c5c4b`.
+
 ## Serial console
 The device offers an USART console on three pins that are easily solderable.
 The configuration is 115200 8N1 3.3V. The three pins (viewed from the Camera

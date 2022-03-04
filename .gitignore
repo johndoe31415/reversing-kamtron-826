@@ -4,3 +4,5 @@ firmware.bin
 out
 jffs2/
 rootfs/
+raspi_image
+raspi_image.tar.gz

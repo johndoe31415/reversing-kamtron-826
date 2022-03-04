@@ -1,0 +1,5 @@
+#!/bin/sh
+#
+#
+
+ssh sniffpi "telnet 192.168.42.108 9527"
