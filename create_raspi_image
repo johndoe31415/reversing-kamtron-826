@@ -20,7 +20,7 @@ cat >raspi_image/bootstrap <<EOF
 #!/bin/bash
 mkdir -p usr/lib
 rsync -a --ignore-existing /lib/. lib
-rsync -a --ignore-existing /usr/lib/. usr/lib
+ln -s /lib /usr/lib
 cp /usr/bin/gdb bin
 cp /bin/bash bin
 EOF
